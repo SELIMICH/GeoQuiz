@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex = 0;
+    private int mRightAnswerInPercent = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkAnswer(true);
+                mTrueButton.setVisibility(View.INVISIBLE);
+                mFalseButton.setVisibility(View.INVISIBLE);
             }
         });
         mFalseButton = (Button) findViewById(R.id.false_button);
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkAnswer(false);
+                mTrueButton.setVisibility(View.INVISIBLE);
+                mFalseButton.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -61,8 +66,14 @@ public class MainActivity extends AppCompatActivity {
         mNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mTrueButton.setVisibility(View.VISIBLE);
+                mFalseButton.setVisibility(View.VISIBLE);
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
                 updateQuestion();
+                if (mCurrentIndex == mQuestionBank.length - 1) {
+                    showResults();
+                    gameOver();
+                }
             }
         });
 
@@ -117,11 +128,27 @@ public class MainActivity extends AppCompatActivity {
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            ++mRightAnswerInPercent;
         }else {
             messageResId = R.string.incorrect_toast;
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT )
                 .show();
+    }
+
+    private void showResults() {
+        int Score;
+        Score = (100 * mRightAnswerInPercent) / mQuestionBank.length;
+        Toast.makeText(this, "Вопрос №" + mCurrentIndex +
+                                          "\nваш результат: " +  mRightAnswerInPercent +
+                                          " правильных ответов\n" +
+                                          Score + "%",Toast.LENGTH_LONG).show();
+    }
+
+    private void gameOver() {
+        mFalseButton.setVisibility(View.INVISIBLE);
+        mTrueButton.setVisibility(View.INVISIBLE);
+        mNextButton.setVisibility(View.INVISIBLE);
     }
 }
